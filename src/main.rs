@@ -79,14 +79,14 @@ fn main() {
             client::new_msg_add_req("test", cbor)
         }
         ("itr_add", Some(args)) => {
-            let log = args.value_of("log").unwrap().into();
-            let itr_name = args.value_of("itr_name").unwrap().into();
-            let itr_type = args.value_of("itr_type").unwrap().into();
+            let log = args.value_of("log").unwrap();
+            let itr_name = args.value_of("itr_name").unwrap();
+            let itr_type = args.value_of("itr_type").unwrap();
             client::new_itr_add_req(log, itr_name, itr_type)
         }
         ("itr_list", Some(_)) => client::new_itr_list_req(),
         ("itr_next", Some(args)) => {
-            let itr_name = args.value_of("itr_name").unwrap().into();
+            let itr_name = args.value_of("itr_name").unwrap();
             let message_id = args.value_of("message_id").unwrap().parse().unwrap();
             let count = args.value_of("count").unwrap().parse().unwrap();
             client::new_itr_next_req(itr_name, message_id, count)

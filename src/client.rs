@@ -138,7 +138,7 @@ pub fn send_req(bytes: Vec<u8>) -> (u8, u8, Vec<u8>) {
 
     let mut buffer = [0; 4];
     stream.read_exact(&mut buffer).unwrap();
-    let size = as_u32_be(&buffer);
+    let size = as_u32_be(buffer);
     let mut output_buffer = vec![0 as u8; (size) as usize].as_slice().to_owned();
     stream.read_exact(&mut output_buffer).expect("peek failed");
 
@@ -164,12 +164,12 @@ fn transform_size_to_array_of_u8(x: usize) -> Vec<u8> {
     let b2: u8 = ((x >> 16) & 0xff) as u8;
     let b3: u8 = ((x >> 8) & 0xff) as u8;
     let b4: u8 = (x & 0xff) as u8;
-    return [b1, b2, b3, b4].to_vec();
+    [b1, b2, b3, b4].to_vec()
 }
 
-fn as_u32_be(array: &[u8; 4]) -> u32 {
+fn as_u32_be(array: [u8; 4]) -> u32 {
     ((array[0] as u32) << 24)
         + ((array[1] as u32) << 16)
         + ((array[2] as u32) << 8)
-        + ((array[3] as u32) << 0)
+        + (array[3] as u32)
 }
