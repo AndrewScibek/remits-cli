@@ -1,0 +1,16 @@
+[package]
+name = "remits-cli"
+version = "0.1.0"
+authors = ["Andrew Scibek <andrew.scibek@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = "2.33"
+serde = { version = "1.0", features = ["derive"] }
+tokio = { version = "0.2.13", features = ["full"] }
+tokio-util = { version = "0.3.0", features = ["codec"] }
+futures = "0.3.4"
+serde_cbor = "0.11.1"
+bytes = "*"
