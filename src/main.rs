@@ -62,21 +62,10 @@ fn main() {
     .get_matches();
 
     let request = match matches.subcommand() {
-        ("log_list", Some(_)) => format!("{:?}", client::new_log_list_req()),
-        ("log_add", Some(args)) => format!(
-            "{:?} Added log: {}",
-            client::new_log_add_req(args.value_of("log_name").unwrap()),
-            args.value_of("log_name").unwrap()
-        ),
-        ("log_show", Some(args)) => format!(
-            "{:?}",
-            client::new_log_show_req(args.value_of("log_name").unwrap())
-        ),
-        ("log_del", Some(args)) => format!(
-            "{:?} Deleted log: {}",
-            client::new_log_del_req(args.value_of("log_name").unwrap()),
-            args.value_of("log_name").unwrap()
-        ),
+        ("log_list", Some(_)) => client::new_log_list_req(),
+        ("log_add", Some(args)) => client::new_log_add_req(args.value_of("log_name").unwrap()),
+        ("log_show", Some(args)) => client::new_log_show_req(args.value_of("log_name").unwrap()),
+        ("log_del", Some(args)) => client::new_log_del_req(args.value_of("log_name").unwrap()),
         ("msg_add", Some(args)) => {
             #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
             struct Msg {
@@ -87,28 +76,37 @@ fn main() {
             };
             let cbor = serde_cbor::to_vec(&test_msg).unwrap();
 
-            format!("{:?}", client::new_msg_add_req("test", cbor))
+            client::new_msg_add_req("test", cbor)
         }
         ("itr_add", Some(args)) => {
             let log = args.value_of("log").unwrap().into();
             let itr_name = args.value_of("itr_name").unwrap().into();
             let itr_type = args.value_of("itr_type").unwrap().into();
-            format!("{:?}", client::new_itr_add_req(log, itr_name, itr_type))
+            client::new_itr_add_req(log, itr_name, itr_type)
         }
-        ("itr_list", Some(_)) => format!("{:?}", client::new_itr_list_req()),
+        ("itr_list", Some(_)) => client::new_itr_list_req(),
         ("itr_next", Some(args)) => {
             let itr_name = args.value_of("itr_name").unwrap().into();
             let message_id = args.value_of("message_id").unwrap().parse().unwrap();
             let count = args.value_of("count").unwrap().parse().unwrap();
-            format!(
-                "{:?}",
-                client::new_itr_next_req(itr_name, message_id, count)
-            )
+            client::new_itr_next_req(itr_name, message_id, count)
         }
-        _ => panic!("{}", "Unknown commmand"),
+        _ => panic!("{}", "How did you get here"),
     };
-    println!("{}", request);
-    // let res = send(request)
-    // first byte is type 0x01:info 0x02:data 0x03:error and return raw bytes
-    // Continued program logic goes here...
+    let output = client::send_req(request);
+    if output.0 == 0x03 {
+        println!("ERROR OCCURED");
+        println!("Response from remits {:?}", output.2);
+        panic!("Bad request");
+    }
+    if output.0 == 0x01{
+        println!("Info response");
+    }
+    if output.0 == 0x02 {
+        println!("Info response");
+    }
+    if output.2 == client::OK_RESP {
+        println!("Ok response");
+    }
+    println!("Response from remits {:?}", output.2);
 }
